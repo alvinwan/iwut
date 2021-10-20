@@ -10,7 +10,7 @@ with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
 VERSION = "0.0.1"
 
 setuptools.setup(
-    name="wut",
+    name="wut-ipython",
     version=VERSION,
     author="Alvin Wan",
     author_email="hi@alvinwan.com",
