@@ -126,10 +126,11 @@ class ExtendedFrameSummary(FrameSummary):
     def lines(self):
         results = []
         for lineno in range(self.lineno - 2, self.lineno + 3):
+            cached = linecache.getline(self.filename, lineno)
             if self.code and lineno > 0 and lineno <= len(self.code):
                 results.append((lineno, self.code[lineno - 1]))
-            elif code := linecache.getline(self.filename, lineno):
-                results.append((lineno, code))
+            elif cached:
+                results.append((lineno, cached))
         return results
 
 
