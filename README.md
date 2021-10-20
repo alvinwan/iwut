@@ -2,6 +2,9 @@
 
 Friendlier tracebacks, collapsing frames with library code, inline variable values, and adding context.
 
+![wut-vars-ctx-prettier](https://user-images.githubusercontent.com/2068077/138010088-d17eef95-0965-49b0-9570-b21c832cbe99.gif)
+
+
 ## Installation
 
 ```
@@ -32,7 +35,3 @@ This will pretty print a friendlier traceback. You can alternatively, use the ce
 %%wut
 1 / 0
 ```
-
-Here is a GIF demo of wut's various features:
-
-![https://i.imgur.com/GFUXqxk.gif](https://i.imgur.com/GFUXqxk.gif)
