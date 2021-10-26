@@ -25,17 +25,13 @@ CSS = """
     background-color:#e3e3e3;
     color:#000;
 }
-.output_area pre.code {
-    padding:0 10px;
+.output_area pre.code-block, .jp-OutputArea pre.code-block {
+    padding:0.5em 0 0.5em 1em;
+    margin:0 0 0.25em 0;
+    border-radius:0.35em;
     overflow:visible;
     color:#999;
     background-color:#f6f6f6;
-}
-pre.meta + pre.code {
-    margin-top:5px;
-}
-pre.code + pre.meta, pre.code + details {
-    margin-top:5px;
 }
 .variable {
     position:relative;
@@ -94,13 +90,20 @@ pre.code + pre.meta, pre.code + details {
 .variable:hover:before, .variable:hover:after {
   display:block;
 }
-.output_area .code.highlight {
+.line {
+    padding:0;
+}
+.output_area .line.highlight, .jp-OutputArea-output .line.highlight {
     color:#000;
 }
-.output_area pre.meta {
+.output_area pre.meta, .jp-OutputArea-output pre.meta {
     padding:5px;
     border-radius:2px;
     margin:5px 0;
+}
+.output_area pre.meta:first-child, .jp-OutputArea-output pre.meta:first-child {
+    padding-top:0;
+    margin-top:0;
 }
 .lineno {
     border-right:1px solid #999;
@@ -112,8 +115,15 @@ pre.code + pre.meta, pre.code + details {
     border-right:1px solid #000;
 }
 .error-container {
-    padding-left:1em;
+    padding:0.5em 1em;
     border-left:3px solid #eee;
+}
+.error-container summary {
+    list-style: none;
+    margin-top:0.5em;
+}
+.output_area .error-summary, .jp-OutputArea-output .error-summary {
+    margin-top:1em;
 }
 </style>
 """
@@ -203,12 +213,17 @@ def get_wut_traceback(etype, value, tb, tb_offset=0, name_to_meta=None):
             f"<pre class='meta'><span style='color:#00A250'>{escape(filename)}</span></pre>" if frame.name == '<module>' else
             f"<pre class='meta'><b><span style='color:#60C6C8'>{escape(frame.name)}</span></b> in <span style='color:#00A250'>{escape(filename)}</span></pre>"
         )
+        lines.append("<pre class='code-block'>")
         for lineno, code in frame.lines:
-            cls, space = "code", "  "
+            cls, space = "line", "  "
             if lineno == frame.lineno:
-                cls, space = "code highlight", "&rightarrow; "
-            lines.append(f"<pre class='{cls}'>{space}<span class='lineno'>{lineno}</span>  {annotate_variables(code, frame.locals)}</pre>")
-    lines.append(f"<br/><pre><span style='color:#E75C58'>{etype.__name__}</span>: {value}</pre>")
+                cls, space = "line highlight", "&rightarrow; "
+            line = annotate_variables(code, frame.locals)[:-1]
+            if line.endswith('\n'):
+                line = line[:-1]
+            lines.append(f"<span class='{cls}'>{space}<span class='lineno'>{lineno}</span>  {line}</span>")
+        lines.append("</pre>")
+    lines.append(f"<pre class='error-summary'><span style='color:#E75C58'>{etype.__name__}</span>: {value}</pre>")
     lines.append("</div>")
     return HTML(CSS + '\n'.join(lines))
 
