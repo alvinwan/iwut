@@ -189,11 +189,13 @@ def filename_to_cell(filename):
 def get_wut_traceback(etype, value, tb, tb_offset=0, name_to_meta=None):
     lines = ["<div class='error-container'>"]
     toggle = False
-    for frame in extract_tb(tb, name_to_meta)[tb_offset:]:
-        if 'site-packages' in frame.filename and not toggle:
+    frames = extract_tb(tb, name_to_meta)[tb_offset:]
+    for frame_idx, frame in enumerate(frames):
+        should_hide_frame = 'site-packages' in frame.filename and not (frame_idx == len(frames) - 1)
+        if should_hide_frame and not toggle:
             lines.append('<details><summary><span class="ellipsis">&middot;&middot;&middot;</span></summary>')
             toggle = True
-        elif 'site-packages' not in frame.filename and toggle:
+        elif not should_hide_frame and toggle:
             lines.append('</details>')
             toggle = False
         filename = filename_to_cell(frame.filename)
