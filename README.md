@@ -8,13 +8,13 @@ Friendlier tracebacks, collapsing frames with library code, inline variable valu
 ## Installation
 
 ```
-pip install wut
+pip install iwut
 ```
 
 ## Notebook
 
 ```
-%load_ext wut
+%load_ext iwut
 ```
 
 Once you hit an error. For example, you may have the following
