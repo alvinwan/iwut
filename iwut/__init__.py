@@ -1,6 +1,9 @@
-from IPython.core.magic import (Magics, magics_class, line_magic,
-                                cell_magic, line_cell_magic)
+from IPython.core.magic import (
+    Magics, magics_class, line_magic, cell_magic,
+    line_cell_magic
+)
 from IPython.core.display import HTML, display
+from IPython import get_ipython
 from traceback import FrameSummary, linecache
 from html import escape
 import sys
@@ -183,10 +186,10 @@ def filename_to_cell(filename):
     return filename
 
 
-def get_wut_traceback(t, value, tb, name_to_meta=None, offset=0):
+def get_wut_traceback(etype, value, tb, tb_offset=0, name_to_meta=None):
     lines = ["<div class='error-container'>"]
     toggle = False
-    for frame in extract_tb(tb, name_to_meta)[offset:]:
+    for frame in extract_tb(tb, name_to_meta)[tb_offset:]:
         if 'site-packages' in frame.filename and not toggle:
             lines.append('<details><summary><span class="ellipsis">&middot;&middot;&middot;</span></summary>')
             toggle = True
@@ -203,12 +206,24 @@ def get_wut_traceback(t, value, tb, name_to_meta=None, offset=0):
             if lineno == frame.lineno:
                 cls, space = "code highlight", "&rightarrow; "
             lines.append(f"<pre class='{cls}'>{space}<span class='lineno'>{lineno}</span>  {annotate_variables(code, frame.locals)}</pre>")
-    lines.append(f"<br/><pre><span style='color:#E75C58'>{t.__name__}</span>: {value}</pre>")
+    lines.append(f"<br/><pre><span style='color:#E75C58'>{etype.__name__}</span>: {value}</pre>")
     lines.append("</div>")
     return HTML(CSS + '\n'.join(lines))
 
 
+def handle_wut_traceback(self, etype, value, tb, tb_offset):
+    return display(get_wut_traceback(etype, value, tb, tb_offset))
 
+
+def handle_wut_command(command):
+    if command == 'on':
+        get_ipython().set_custom_exc((Exception,), handle_wut_traceback)
+        return True
+    elif command == 'off':
+        get_ipython().set_custom_exc((), None)
+        return True
+    
+    
 def load_ipython_extension(ipython):
     ipython.register_magics(iWutMagics)
 
@@ -218,10 +233,12 @@ class iWutMagics(Magics):
 
     @line_magic('wut')
     def line_magic(self, line):
+        if handle_wut_command(line):
+            return 
         if not hasattr(sys, 'last_type'):
             print('No last error to analyze!')
             return
-        display(get_wut_traceback(sys.last_type, sys.last_value, sys.last_traceback, offset=1))
+        display(get_wut_traceback(sys.last_type, sys.last_value, sys.last_traceback, tb_offset=1))
 
     @cell_magic('wut')
     def cell_magic(self, line, cell):
@@ -230,4 +247,4 @@ class iWutMagics(Magics):
         except Exception as e:
             display(get_wut_traceback(type(e), e, e.__traceback__, name_to_meta={
                 '<string>': {'code': cell, 'name': '(current cell)'}
-            }, offset=1))
+            }, tb_offset=1))
