@@ -243,7 +243,7 @@ class iWutMagics(Magics):
     @cell_magic('wut')
     def cell_magic(self, line, cell):
         try:
-            exec(cell)
+            self.shell.ex(cell)
         except Exception as e:
             display(get_wut_traceback(type(e), e, e.__traceback__, name_to_meta={
                 '<string>': {'code': cell, 'name': '(current cell)'}
