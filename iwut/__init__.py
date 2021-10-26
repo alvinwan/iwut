@@ -210,11 +210,11 @@ def get_wut_traceback(t, value, tb, name_to_meta=None, offset=0):
 
 
 def load_ipython_extension(ipython):
-    ipython.register_magics(WutMagics)
+    ipython.register_magics(iWutMagics)
 
 
 @magics_class
-class WutMagics(Magics):
+class iWutMagics(Magics):
 
     @line_magic('wut')
     def line_magic(self, line):

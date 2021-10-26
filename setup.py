@@ -10,7 +10,7 @@ with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
 VERSION = "0.0.1"
 
 setuptools.setup(
-    name="wut-ipython",
+    name="iwut",
     version=VERSION,
     author="Alvin Wan",
     author_email="hi@alvinwan.com",
@@ -31,7 +31,7 @@ setuptools.setup(
     keywords="ipython traceback error exception",
     url="https://pypi.python.org/pypi/wut",
     license="MIT",
-    packages=["wut"],
+    packages=["iwut"],
     include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,
